@@ -4,6 +4,8 @@ import { FiArrowLeft } from 'react-icons/fi';
 
 import { Map, TileLayer, Marker } from 'react-leaflet';
 
+import api from '~/services/api';
+
 import logo from '~/assets/logo.svg';
 import './styles.css';
 
