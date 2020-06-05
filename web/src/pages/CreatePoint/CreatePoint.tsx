@@ -4,7 +4,7 @@ import { FiArrowLeft } from 'react-icons/fi';
 
 import { Map, TileLayer, Marker } from 'react-leaflet';
 
-import logo from '../../assets/logo.svg';
+import logo from '~/assets/logo.svg';
 import './styles.css';
 
 const CreatePoint = () => {
