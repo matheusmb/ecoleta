@@ -9,6 +9,7 @@ import { LeafletMouseEvent } from 'leaflet';
 import api from '~/services/api';
 
 import logo from '~/assets/logo.svg';
+import SuccessSplash from './SuccessSplash';
 import './styles.css';
 
 interface Item {
@@ -152,6 +153,7 @@ const CreatePoint = () => {
 
   return (
     <div id="page-create-point">
+      <SuccessSplash />
       <header>
         <img src={logo} alt="Ecoleta" />
         <Link to="/">
