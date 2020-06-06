@@ -33,6 +33,7 @@ const CreatePoint = () => {
 
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [showSuccessScreen, setShowSuccessScreen] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -146,14 +147,20 @@ const CreatePoint = () => {
 
     await api.post('points', data);
 
-    alert('Ponto de coleta criado com sucesso!');
+    setShowSuccessScreen(true);
+  }
 
+  function handleSuccessScreenClick() {
+    setShowSuccessScreen(false);
     history.push('/');
   }
 
   return (
     <div id="page-create-point">
-      <SuccessSplash />
+      <SuccessSplash
+        show={showSuccessScreen}
+        onClick={handleSuccessScreenClick}
+      />
       <header>
         <img src={logo} alt="Ecoleta" />
         <Link to="/">
