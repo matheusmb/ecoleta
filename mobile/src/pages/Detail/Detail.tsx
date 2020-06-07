@@ -96,6 +96,7 @@ interface Params {
 interface Data {
   point: {
     image: string;
+    image_url: string;
     name: string;
     email: string;
     whatsapp: string;
@@ -118,7 +119,7 @@ const Detail = () => {
     api.get(`points/${routeParams.point_id}`).then((response) => {
       setData(response.data);
     });
-  });
+  }, [routeParams]);
 
   function handleComposeMail() {
     MailComposer.composeAsync({
@@ -129,7 +130,7 @@ const Detail = () => {
 
   function handleWhatsApp() {
     Linking.openURL(
-      `whatsapp://send?phone=${data.point.whatsapp}&text=Tenho interesse sobre coleta de resíduos`
+      `whatsapp://send?phone=55${data.point.whatsapp}&text=Tenho interesse sobre coleta de resíduos`
     );
   }
 
@@ -151,7 +152,7 @@ const Detail = () => {
         <Image
           style={styles.pointImage}
           source={{
-            uri: data.point.image,
+            uri: data.point.image_url,
           }}
         />
         <Text style={styles.pointName}>{data.point.name}</Text>

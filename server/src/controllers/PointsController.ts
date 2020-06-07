@@ -27,8 +27,8 @@ class PointsController {
 
     const points = await pointsQuery.distinct().select('points.*');
 
-    const serializedPoints = points.map((points) => ({
-      ...points,
+    const serializedPoints = points.map((point) => ({
+      ...point,
       image_url: `http://192.168.1.111:3333/uploads/${point.image}`,
     }));
 
@@ -54,7 +54,7 @@ class PointsController {
       image_url: `http://192.168.1.111:3333/uploads/${point.image}`,
     };
 
-    return response.json({ serializedPoint, items });
+    return response.json({ point: serializedPoint, items });
   }
 
   async create(request: Request, response: Response) {
