@@ -3,21 +3,29 @@ import knex from '../database/connection';
 
 class PointsController {
   async index(request: Request, response: Response) {
-    const { city, uf, items } = request.query;
+    const queryParam = request.query;
 
-    const parsedItems = String(items)
-      .split(',')
-      .map((item) => Number(item.trim()));
+    const pointsQuery = knex('points').join(
+      'point_items',
+      'points.id',
+      '=',
+      'point_items.point_id'
+    );
 
-    const points = await knex('points')
-      .join('point_items', 'points.id', '=', 'point_items.point_id')
-      .whereIn('point_items.item_id', parsedItems)
-      .where('city', String(city))
-      .where('uf', String(uf))
-      .distinct()
-      .select('points.*');
+    queryParam &&
+      Object.entries(queryParam).map(([key, val]) => {
+        if (key == 'items') {
+          const parsedItems = String(val)
+            .split(',')
+            .map((item) => Number(item.trim()));
+          parsedItems.length > 0 &&
+            pointsQuery.whereIn('point_items.item_id', parsedItems);
+        } else {
+          pointsQuery.where(key, String(val));
+        }
+      });
 
-    console.log(city, uf, items);
+    const points = await pointsQuery.distinct().select('points.*');
 
     return response.json(points);
   }
