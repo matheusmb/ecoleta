@@ -141,7 +141,6 @@ const Points = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [points, setPoints] = useState<Point[]>([]);
-  const [test, setTest] = useState(0);
 
   const [initialPosition, setInitialPosition] = useState<[number, number]>([
     0,

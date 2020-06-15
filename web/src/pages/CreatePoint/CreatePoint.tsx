@@ -8,6 +8,7 @@ import { LeafletMouseEvent } from 'leaflet';
 
 import api from '~/services/api';
 import DropZone from '~/components/DropZone';
+import { OPEN_CAGE_API_KEY } from '~/config/keys';
 
 import logo from '~/assets/logo.svg';
 import SuccessSplash from './SuccessSplash';
@@ -25,6 +26,16 @@ interface IBGEUFResponse {
 
 interface IBGECityResponse {
   nome: string;
+}
+
+interface OpenCageDataResponse {
+  results: {
+    components: {
+      city: string;
+      town: string;
+      state_code: string;
+    };
+  }[];
 }
 
 type Position = [number, number];
@@ -59,6 +70,25 @@ const CreatePoint = () => {
       setInitialPosition([latitude, longitude]);
     });
   }, []);
+
+  useEffect(() => {
+    if (selectedPosition[0] === 0) return;
+
+    axios
+      .get<OpenCageDataResponse>(
+        `https://api.opencagedata.com/geocode/v1/json?key=${OPEN_CAGE_API_KEY}&q=${selectedPosition.join(
+          ','
+        )}&no_annotations=1`
+      )
+      .then((response) => {
+        const locationData = response.data.results[0];
+        if (locationData) {
+          const { state_code, city, town } = locationData.components;
+          setSelectedUF(state_code);
+          setSelectedCity(town || city);
+        }
+      });
+  }, [selectedPosition]);
 
   useEffect(() => {
     api.get('items').then((response) => {

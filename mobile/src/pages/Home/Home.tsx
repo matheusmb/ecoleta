@@ -6,14 +6,17 @@ import {
   View,
   Text,
   Image,
-  TextInput,
+  Alert,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+import * as Location from 'expo-location';
 import axios from 'axios';
 import PickerSelect from 'react-native-picker-select';
+
+import { OPEN_CAGE_API_KEY } from '../../config/keys';
 
 interface IBGEUFResponse {
   sigla: string;
@@ -21,6 +24,16 @@ interface IBGEUFResponse {
 
 interface IBGECityResponse {
   nome: string;
+}
+
+interface OpenCageDataResponse {
+  results: {
+    components: {
+      city: string;
+      town: string;
+      state_code: string;
+    };
+  }[];
 }
 
 const Home = () => {
@@ -58,6 +71,40 @@ const Home = () => {
       });
   }, [selectedUF]);
 
+  useEffect(() => {
+    async function loadPosition() {
+      const { status } = await Location.requestPermissionsAsync();
+
+      if (status !== 'granted') {
+        Alert.alert(
+          'Oooops...',
+          'Precisamos de sua permissao para obter a localização'
+        );
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync();
+
+      const { latitude, longitude } = location.coords;
+
+      axios
+        .get<OpenCageDataResponse>(
+          `https://api.opencagedata.com/geocode/v1/json?key=${OPEN_CAGE_API_KEY}&q=${latitude},${longitude}
+          &no_annotations=1`
+        )
+        .then((response) => {
+          const locationData = response.data.results[0];
+          if (locationData) {
+            const { state_code, city, town } = locationData.components;
+            setSelectedUF(state_code);
+            setSelectedCity(town || city);
+          }
+        });
+    }
+
+    loadPosition();
+  }, []);
+
   function handleNavigateToPoints() {
     navigation.navigate('Points', {
       uf: selectedUF,
@@ -92,6 +139,7 @@ const Home = () => {
             style={pickerSelectStyles}
             placeholder={{ label: 'Selecione uma UF', value: '0' }}
             doneText="Selecionar"
+            value={selectedUF}
             onValueChange={(value) => setSelectedUF(value)}
             items={[...ufs.map((uf) => ({ label: uf, value: uf }))]}
           />
@@ -100,6 +148,7 @@ const Home = () => {
             placeholder={{ label: 'Selecione uma cidade', value: '0' }}
             doneText="Selecionar"
             disabled={cities.length == 0}
+            value={selectedCity}
             onValueChange={(value) => setSelectedCity(value)}
             items={[...cities.map((city) => ({ label: city, value: city }))]}
           />

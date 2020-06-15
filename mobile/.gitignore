@@ -10,5 +10,8 @@ npm-debug.*
 web-build/
 web-report/
 
+# api keys
+src/config/keys.ts
+
 # macOS
 .DS_Store
